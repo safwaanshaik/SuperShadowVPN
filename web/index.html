@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperShadowVPN</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 400px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .logo { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 30px; color: #007AFF; }
+        .status { text-align: center; margin: 20px 0; padding: 15px; border-radius: 8px; font-weight: 500; }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .connect { background: #007AFF; color: white; }
+        .disconnect { background: #FF3B30; color: white; }
+        .info { font-size: 12px; color: #666; text-align: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🛡️ SuperShadowVPN</div>
+        
+        <div id="status" class="status disconnected">Disconnected</div>
+        
+        <input type="text" id="server" placeholder="Server Address" value="">
+        <input type="number" id="port" placeholder="Port" value="8081">
+        <input type="password" id="password" placeholder="Password" value="supersecretkey32byteslongformax">
+        
+        <button id="connectBtn" class="connect" onclick="toggleConnection()">Connect</button>
+        
+        <div class="info">
+            Web-based VPN proxy for iPhone testing<br>
+            Works through secure WebSocket connection
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let connected = false;
+
+        function updateStatus(status, isConnected) {
+            const statusEl = document.getElementById('status');
+            const btnEl = document.getElementById('connectBtn');
+            
+            statusEl.textContent = status;
+            statusEl.className = `status ${isConnected ? 'connected' : 'disconnected'}`;
+            
+            btnEl.textContent = isConnected ? 'Disconnect' : 'Connect';
+            btnEl.className = isConnected ? 'disconnect' : 'connect';
+            
+            connected = isConnected;
+        }
+
+        function toggleConnection() {
+            if (connected) {
+                disconnect();
+            } else {
+                connect();
+            }
+        }
+
+        function connect() {
+            const server = document.getElementById('server').value || window.location.hostname;
+            const port = document.getElementById('port').value || '8081';
+            
+            updateStatus('Connecting...', false);
+            
+            ws = new WebSocket(`ws://${server}:${port}/ws`);
+            
+            ws.onopen = () => {
+                updateStatus('Connected', true);
+            };
+            
+            ws.onclose = () => {
+                updateStatus('Disconnected', false);
+            };
+            
+            ws.onerror = () => {
+                updateStatus('Connection Failed', false);
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+            updateStatus('Disconnected', false);
+        }
+
+        window.onload = () => {
+            document.getElementById('server').value = window.location.hostname;
+        };
+    </script>
+</body>
+</html>

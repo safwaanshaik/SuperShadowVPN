@@ -1,0 +1,24 @@
+{
+  "server": {
+    "port": "8080",
+    "encryption": "aes-256-gcm",
+    "key": "supersecretkey32byteslongformax",
+    "timeout": 300
+  },
+  "client": {
+    "server_address": "your-server.com:8080",
+    "local_port": "1080",
+    "encryption": "aes-256-gcm",
+    "key": "supersecretkey32byteslongformax"
+  },
+  "security": {
+    "obfuscation": true,
+    "multi_hop": false,
+    "leak_protection": true
+  },
+  "performance": {
+    "load_balancing": true,
+    "tcp_fast_open": true,
+    "buffer_size": 4096
+  }
+}
