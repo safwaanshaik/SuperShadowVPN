@@ -134,6 +134,9 @@ sudo iptables -A INPUT -p udp --dport 1194 -j ACCEPT
 sudo iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
 sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
 
+# Apply stealth settings
+bash advanced/stealth.sh
+
 # Start services
 sudo wg-quick up wg0
 sudo systemctl start openvpn@server

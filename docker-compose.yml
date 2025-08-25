@@ -1,33 +1,18 @@
 version: '3.8'
 
 services:
-  supershadowvpn-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    ports:
-      - "8080:8080"
-    environment:
-      - VPN_PORT=8080
-      - VPN_KEY=supersecretkey32byteslongformax
+  supershadowvpn:
+    build: .
+    container_name: supershadowvpn
     restart: unless-stopped
-    networks:
-      - vpn-network
-
-  supershadowvpn-client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
+    privileged: true
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
     ports:
-      - "1080:1080"
-    environment:
-      - SERVER_ADDRESS=supershadowvpn-server:8080
-      - LOCAL_PORT=1080
-    depends_on:
-      - supershadowvpn-server
-    networks:
-      - vpn-network
-
-networks:
-  vpn-network:
-    driver: bridge
+      - "1194:1194/udp"
+      - "51820:51820/udp"
+    volumes:
+      - ./configs:/root/clients
+    devices:
+      - /dev/net/tun
